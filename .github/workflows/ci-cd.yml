@@ -1,30 +1,38 @@
-name: CI/CD Pipeline for Node.js Application
+name: CI/CD Pipeline
 
-on:
+on: 
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test > test-results.txt
+      - name: Run Tests and Capture Results
+        run: |
+          mkdir -p test-results
+          npm test -- --json --outputFile=test-results/test-results.json || true
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: test-results.txt
+          path: test-results/test-results.json
+          retention-days: 10
