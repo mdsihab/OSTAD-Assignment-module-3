@@ -1,6 +1,6 @@
 name: CI/CD Pipeline
 
-on: 
+on:
   push:
     branches:
       - main
@@ -35,4 +35,35 @@ jobs:
         with:
           name: test-results
           path: test-results/test-results.json
-          retention-days: 10
+          retention-days: 5
+
+  deploy:
+    name: Deploy Application
+    needs: test
+    runs-on: self-hosted  # Ensure a self-hosted runner is available
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Test Results Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: test-results
+
+      - name: Display Test Results
+        run: cat test-results/test-results.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install --production
+
+      - name: Restart Application (Example: PM2)
+        run: |
+          pm2 stop my-app || true
+          pm2 start server.js --name my-app
