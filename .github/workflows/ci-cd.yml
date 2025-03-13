@@ -35,7 +35,7 @@ jobs:
         with:
           name: test-results
           path: test-results/test-results.json
-          retention-days: 5
+          retention-days: 10
 
   deploy:
     name: Deploy Application
@@ -63,7 +63,7 @@ jobs:
       - name: Install Dependencies
         run: npm install --production
 
-      - name: Restart Application (Example: PM2)
+      - name: Restart Application 
         run: |
-          pm2 stop my-app || true
-          pm2 start server.js --name my-app
+          pm2 stop OSTAD-Assignment-module-3 || true
+          pm2 start server.js --name OSTAD-Assignment-module-3
